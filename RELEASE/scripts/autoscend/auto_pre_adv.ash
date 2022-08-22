@@ -238,27 +238,6 @@ boolean auto_pre_adventure()
 		}
 	}
 
-	if (isActuallyEd())
-	{
-		// make sure we have enough MP to cast our most expensive spells
-		// Wrath of Ra (yellow ray) is 40 MP, Curse of Stench (sniff) is 35 MP & Curse of Vacation (banish) is 30 MP.
-		if (place != $location[The Shore, Inc. Travel Agency])
-		{
-			acquireMP(40, 1000);
-			// ensure we can cast at least Fist of the Mummy or Storm of the Scarab.
-			// so we don't waste adventures when we can't actually kill a monster.
-			acquireMP(8, 0);
-		}
-
-		if (my_hp() == 0)
-		{
-			// the game doesn't let you adventure if you have no HP even though Ed
-			// gets a full heal when he goes to the underworld
-			// only necessary if a non-combat puts you on 0 HP.
-			edAcquireHP();
-		}
-	}
-
 	if(in_tcrs())
 	{
 		if(my_class() == $class[Sauceror] && my_sign() == "Blender")
@@ -741,7 +720,28 @@ boolean auto_pre_adventure()
 	borisWastedMP();
 	borisTrusty();
 
+	// restore MP
 	acquireMP(32, 1000);
+	if (isActuallyEd())
+	{
+		// make sure we have enough MP to cast our most expensive spells
+		// Wrath of Ra (yellow ray) is 40 MP, Curse of Stench (sniff) is 35 MP & Curse of Vacation (banish) is 30 MP.
+		if (place != $location[The Shore, Inc. Travel Agency])
+		{
+			acquireMP(40, 1000);
+			// ensure we can cast at least Fist of the Mummy or Storm of the Scarab.
+			// so we don't waste adventures when we can't actually kill a monster.
+			acquireMP(8, 0);
+		}
+ 
+		if (my_hp() == 0)
+		{
+			// the game doesn't let you adventure if you have no HP even though Ed
+			// gets a full heal when he goes to the underworld
+			// only necessary if a non-combat puts you on 0 HP.
+			edAcquireHP();
+		}
+	}
 
 	if(in_hardcore() && (my_class() == $class[Sauceror]) && (my_mp() < 32))
 	{
