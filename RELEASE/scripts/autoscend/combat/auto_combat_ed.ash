@@ -250,10 +250,14 @@ string auto_edCombatHandler(int round, monster enemy, string text)
 
 	if (canUse($skill[Curse Of Stench]) && get_property("stenchCursedMonster").to_monster() != enemy && get_property("_edDefeats").to_int() < 3)
 	{
-		if(auto_wantToSniff(enemy, my_location()))
+		// ensure enough mana for stench + lash + scarabs
+		if(my_mp() >= 55)
 		{
-			handleTracker(enemy, $skill[Curse Of Stench], "auto_sniffs");
-			return useSkill($skill[Curse Of Stench]);
+			if(auto_wantToSniff(enemy, my_location()))
+			{
+				handleTracker(enemy, $skill[Curse Of Stench], "auto_sniffs");
+				return useSkill($skill[Curse Of Stench]);
+			}
 		}
 	}
 
@@ -261,31 +265,35 @@ string auto_edCombatHandler(int round, monster enemy, string text)
 	{
 		if (canUse($skill[Curse Of Stench]) && get_property("stenchCursedMonster").to_monster() != enemy && get_property("_edDefeats").to_int() < 3)
 		{
-			boolean doStench = false;
-			#	Rememeber, we are looking to see if we have enough of the opposite item here.
-			if(enemy == $monster[Warehouse Guard])
+			// ensure enough mana for stench + lash + scarabs
+			if(my_mp() >= 55)
 			{
-				int progress = get_property("warehouseProgress").to_int();
-				progress = progress + (8 * item_amount($item[Warehouse Inventory Page]));
-				if(progress >= 50)
+				boolean doStench = false;
+				#	Rememeber, we are looking to see if we have enough of the opposite item here.
+				if(enemy == $monster[Warehouse Guard])
 				{
-					doStench = true;
+					int progress = get_property("warehouseProgress").to_int();
+					progress = progress + (8 * item_amount($item[Warehouse Inventory Page]));
+					if(progress >= 50)
+					{
+						doStench = true;
+					}
 				}
-			}
 
-			if(enemy == $monster[Warehouse Clerk])
-			{
-				int progress = get_property("warehouseProgress").to_int();
-				progress = progress + (8 * item_amount($item[Warehouse Map Page]));
-				if(progress >= 50)
+				if(enemy == $monster[Warehouse Clerk])
 				{
-					doStench = true;
+					int progress = get_property("warehouseProgress").to_int();
+					progress = progress + (8 * item_amount($item[Warehouse Map Page]));
+					if(progress >= 50)
+					{
+						doStench = true;
+					}
 				}
-			}
-			if(doStench)
-			{
-				handleTracker(enemy, $skill[Curse of Stench], "auto_sniffs");
-				return useSkill($skill[Curse Of Stench]);
+				if(doStench)
+				{
+					handleTracker(enemy, $skill[Curse of Stench], "auto_sniffs");
+					return useSkill($skill[Curse Of Stench]);
+				}
 			}
 		}
 	}
@@ -294,30 +302,34 @@ string auto_edCombatHandler(int round, monster enemy, string text)
 	{
 		if (canUse($skill[Curse Of Stench]) && get_property("stenchCursedMonster").to_monster() != enemy && get_property("_edDefeats").to_int() < 3)
 		{
-			boolean doStench = false;
-			string stenched = to_lower_case(get_property("stenchCursedMonster"));
+			// ensure enough mana for stench + scarabs (we don't lash a smut orc)
+			if(my_mp() >= 43)
+			{
+				boolean doStench = false;
+				string stenched = to_lower_case(get_property("stenchCursedMonster"));
 
-			if((fastenerCount() >= 30) && (stenched != "smut orc pipelayer") && (stenched != "smut orc jacker"))
-			{
-				#	Sniff 100% lumber
-				if((enemy == $monster[Smut Orc Pipelayer]) || (enemy == $monster[Smut Orc Jacker]))
+				if((fastenerCount() >= 30) && (stenched != "smut orc pipelayer") && (stenched != "smut orc jacker"))
 				{
-					doStench = true;
+					#	Sniff 100% lumber
+					if((enemy == $monster[Smut Orc Pipelayer]) || (enemy == $monster[Smut Orc Jacker]))
+					{
+						doStench = true;
+					}
 				}
-			}
-			if((lumberCount() >= 30) && (stenched != "smut orc screwer") && (stenched != "smut orc nailer"))
-			{
-				#	Sniff 100% fastener
-				if((enemy == $monster[Smut Orc Screwer]) || (enemy == $monster[Smut Orc Nailer]))
+				if((lumberCount() >= 30) && (stenched != "smut orc screwer") && (stenched != "smut orc nailer"))
 				{
-					doStench = true;
+					#	Sniff 100% fastener
+					if((enemy == $monster[Smut Orc Screwer]) || (enemy == $monster[Smut Orc Nailer]))
+					{
+						doStench = true;
+					}
 				}
-			}
 
-			if(doStench)
-			{
-				handleTracker(enemy, $skill[Curse of Stench], "auto_sniffs");
-				return useSkill($skill[Curse Of Stench]);
+				if(doStench)
+				{
+					handleTracker(enemy, $skill[Curse of Stench], "auto_sniffs");
+					return useSkill($skill[Curse Of Stench]);
+				}
 			}
 		}
 	}

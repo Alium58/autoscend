@@ -729,9 +729,9 @@ boolean auto_pre_adventure()
 		if (place != $location[The Shore, Inc. Travel Agency])
 		{
 			acquireMP(40, 1000);
-			// ensure we can cast at least Fist of the Mummy or Storm of the Scarab.
+			// ensure we can cast last of the cobra + Storm of the Scarab.
 			// so we don't waste adventures when we can't actually kill a monster.
-			acquireMP(8, 0);
+			acquireMP(20, 0);
 		}
  
 		if (my_hp() == 0)
