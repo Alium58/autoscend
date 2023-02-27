@@ -676,27 +676,8 @@ void auto_checkTrainSet()
 	int two;
 	int three;
 	int four;
-	if(my_level() < 13) //check if we need more stats. There is no check for disregard instant karma because
-	//if we do check, we will never double lumber mill, which is more beneficial than continuing to double mainstat.
-	//Do we want the next line's if statement instead because this will still generate so many stats
-	//if(my_level() < 12) //Double mainstat until we reach L12
-	{
-		if(my_primestat() == $stat[Muscle])
-		{
-			two = 17;
-		}
-		else if(my_primestat() == $stat[Mysticality])
-		{
-			two = 16;
-		}
-		else
-		{
-			two = 14;
-		}
-		three = 3; //all stats
-		four = 6; //lumber mill
-	}
-	else if(fastenerCount() < 30 || lumberCount() < 30)//Double lumber mill to clear orc bridge faster
+	
+	if(fastenerCount() < 30 || lumberCount() < 30)//Double lumber mill to clear orc bridge faster
 	{
 		two = 6; //lumber mill
 		if(my_primestat() == $stat[Muscle])
@@ -712,6 +693,23 @@ void auto_checkTrainSet()
 			three = 14;
 		}
 		four = 3; //all stats
+	}
+	else if(my_level() < 13 || disregardInstantKarma()) //double mainstat until at least level 13
+	{
+		if(my_primestat() == $stat[Muscle])
+		{
+			two = 17;
+		}
+		else if(my_primestat() == $stat[Mysticality])
+		{
+			two = 16;
+		}
+		else
+		{
+			two = 14;
+		}
+		three = 3; //all stats
+		four = 11; //spooky res, sleaze dmg
 	}
 	else //no need for main stats or bridge parts so lets do resistances and offstats
 	{
