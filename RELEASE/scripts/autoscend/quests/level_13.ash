@@ -69,32 +69,79 @@ int EightBitScore()
 boolean EightBitRealmHandler()
 {
 	//Spend adventures to get the digital key
-	boolean adv_spent = false;
-
 	string color = get_property("8BitColor");
-	switch(color)
+
+	float expectedInitMod = provideInitiative(600, $location[Vanya\'s Castle], true, true);
+	float initBonusPoints = min(300, expectedInitMod - 300) / 2;
+	int expectedInitPoints = 50 + max(0, floor(initBonusPoints));
+	if(color == "black")
 	{
-		case "black":	
-			provideInitiative(600, $location[Vanya\'s Castle], true);	
-			addToMaximize("200initiative 800max");
+		// double points
+		expectedInitPoints += expectedInitPoints;
+	}
+
+	float expectedMeatMod = provideMeat(450, $location[The Fungus Plains], true, true);
+	float meatBonusPoints = min(300, expectedMeatMod - 150) / 2;
+	int expectedMeatPoints = 50 + max(0, floor(meatBonusPoints));
+	if(color == "red")
+	{
+		// double points
+		expectedMeatPoints += expectedMeatPoints;
+	}
+
+	float expectedDAMod = provideDA(600, $location[Megalo-City], true, true);
+	float DABonusPoints = min(300, expectedDAMod - 300) / 2;
+	int expectedDAPoints = 50 + max(0, floor(DABonusPoints));
+	if(color == "blue")
+	{
+		// double points
+		expectedDAPoints += expectedDAPoints;
+	}
+
+	float expectedItemMod = provideItem(400, $location[Hero\'s Field], true, true);
+	float ItemBonusPoints = min(300, expectedItemMod - 100) / 2;
+	int expectedItemPoints = 50 + max(0, floor(ItemBonusPoints));
+	if(color == "green")
+	{
+		// double points
+		expectedItemPoints += expectedItemPoints;
+	}
+
+	string bestTest = "init";
+	int bestScore = expectedInitPoints;
+	if(expectedMeatPoints > bestScore)
+	{
+		bestTest = "meat";
+		bestScore = expectedMeatPoints;
+	}
+	if(expectedDAPoints > bestScore)
+	{
+		bestTest = "DA";
+		bestScore = expectedDAPoints;
+	}
+	if(expectedItemPoints < bestScore)
+	{
+		bestTest = "item";
+		bestScore = expectedItemPoints;
+	}
+
+	boolean adv_spent = false;
+	switch(bestTest)
+	{
+		case "init":	
+			provideInitiative(600, $location[Vanya\'s Castle], true);
 			adv_spent = autoAdv($location[Vanya\'s Castle]);
 			break;
-		case "red":
-			buffMaintain($effect[Polka of Plenty], 30, 1, 1);
-			addToMaximize("200meat drop 550max");
+		case "meat":
+			provideMeat(450, $location[The Fungus Plains], true);
 			adv_spent = autoAdv($location[The Fungus Plains]);
 			break;
-		case "blue":
-			buffMaintain($effect[Ghostly Shell], 30, 1, 1);			//+80 DA. 6 MP
-			buffMaintain($effect[Astral Shell], 30, 1, 1);			//+80 DA, 10 MP
-			buffMaintain($effect[Feeling Peaceful], 0, 1, 1);
-			addToMaximize("200DA 600max");
+		case "DA":
+			provideDA(600, $location[Megalo-City], true);
 			adv_spent = autoAdv($location[Megalo-City]);
 			break;
-		case "green":
-			buffMaintain($effect[Fat Leon\'s Phat Loot Lyric], 30, 1, 1);
-			buffMaintain($effect[Singer\'s Faithful Ocelot], 30, 1, 1);
-			addToMaximize("200item 500max");
+		case "item":
+			provideItem(400, $location[Hero\'s Field], true);
 			adv_spent = autoAdv($location[Hero\'s Field]);
 			break;
 		default:
