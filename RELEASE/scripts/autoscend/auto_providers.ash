@@ -1192,3 +1192,203 @@ boolean provideMoxie(int amt, boolean doEquips)
 	return provideMoxie(amt, my_location(), doEquips);
 }
 
+float provideMeat(int amt, location loc, boolean doEquips, boolean speculative)
+{
+	auto_log_info((speculative ? "Checking if we can" : "Trying to") + " provide " + amt + " meat, " + (doEquips ? "with" : "without") + " equipment", "blue");
+
+	float alreadyHave = numeric_modifier("Meat Drop");
+	float need = amt - alreadyHave;
+
+	if(need > 0)
+	{
+		auto_log_debug("We currently have " + alreadyHave + ", so we need an extra " + need);
+	}
+	else
+	{
+		auto_log_debug("We already have enough!");
+	}
+
+	float delta = 0;
+
+	float result()
+	{
+		return numeric_modifier("Meat Drop") + delta;
+	}
+
+	if(doEquips)
+	{
+		//craft IOTM derivative that gives high meat bonus
+		item toCraft = $item[half a purse];
+		if((!possessEquipment(toCraft)) && (item_amount($item[Lump of Brituminous Coal]) > 0) && auto_is_valid(toCraft))
+		{
+			buyUpTo(1, $item[loose purse strings]);
+			autoCraft("smith", 1, $item[Lump of Brituminous Coal], $item[loose purse strings]);
+		}
+
+		string max = "500meat " + (amt + 100) + "max";
+		if(speculative)
+		{
+			simMaximizeWith(loc, max);
+		}
+		else
+		{
+			addToMaximize(max);
+			simMaximize(loc);
+		}
+		delta = simValue("Meat Drop") - numeric_modifier("Meat Drop");
+		auto_log_debug("With gear we can get to " + result());
+	}
+
+	boolean pass()
+	{
+		return result() >= amt;
+	}
+
+	if(pass())
+		return result();
+
+	//see how much familiar will help
+	if(doEquips && pathHasFamiliar() && pathAllowsChangingFamiliar())
+	{
+		if(!speculative)
+		{
+			handleFamiliar("meat");
+		}
+		// fam isn't equipped immediatly even if we aren't speculating
+		// so add bonus from fam regardless of speculation
+		familiar target = lookupFamiliarDatafile("meat");
+		if(target != $familiar[none])
+		{
+			int famWeight = familiar_weight(target) + weight_adjustment();
+			delta += numeric_modifier(target, "Meat Drop",famWeight,$item[none]);
+		}
+
+		auto_log_debug("With familiar we can get to " + result());
+
+		if(pass())
+			return result();
+	}
+
+	void handleEffect(effect eff)
+	{
+		if(speculative)
+		{
+			delta += numeric_modifier(eff, "Meat Drop");
+		}
+		auto_log_debug("We " + (speculative ? "can gain" : "just gained") + " " + eff.to_string() + ", now we have " + result());
+	}
+
+	boolean tryEffects(boolean [effect] effects)
+	{
+		foreach eff in effects
+		{
+			if(buffMaintain(eff, 0, 1, 1, speculative))
+				handleEffect(eff);
+			if(pass())
+				return true;
+		}
+		return false;
+	}
+
+	// unlimited skills
+	shrugAT($effect[Polka of Plenty]);
+	if(tryEffects($effects[
+		Fat Leon\'s Phat Loot Lyric,
+		Singer\'s Faithful Ocelot
+	]))
+		return result();
+
+	if(canAsdonBuff($effect[Driving Observantly]))
+	{
+		if(!speculative)
+			asdonBuff($effect[Driving Observantly]);
+		handleEffect($effect[Driving Observantly]);
+	}
+	if(pass())
+		return result();
+
+	if(!bat_wantHowl(loc) && bat_formWolf(speculative))
+	{
+		handleEffect($effect[Wolf Form]);
+	}
+	if(pass())
+		return result();
+
+	if(auto_birdModifier("Meat Drop") > 0)
+	{
+		if(tryEffects($effects[Blessing of the Bird]))
+			return result();
+	}
+
+	if(auto_favoriteBirdModifier("Meat Drop") > 0)
+	{
+		if(tryEffects($effects[Blessing of Your Favorite Bird]))
+			return result();
+	}
+
+	// items
+	if(tryEffects($effects[
+		Joyful Resolve,
+		Fortunate Resolve,
+		Human-Human Hybrid,
+		Unusual Perspective,
+		Eagle Eyes,
+		Heart of Lavender,
+		Five Sticky Fingers
+	]))
+		return result();
+		
+	if(auto_sourceTerminalEnhanceLeft() > 0 && have_effect($effect[items.enh]) == 0 && auto_is_valid($effect[items.enh]))
+	{
+		if(!speculative)
+			auto_sourceTerminalEnhance("items");
+		handleEffect($effect[items.enh]);
+		if(pass())
+			return result();
+	}
+
+	if(doEquips && (get_property("sidequestArenaCompleted") == "fratboy") && !get_property("concertVisited").to_boolean() && (have_effect($effect[Winklered]) == 0))
+	{
+		cli_execute("concert 2");
+	}
+
+	if(get_property("auto_dickstab").to_boolean())
+	{
+		if(tryEffects($effects[
+			Wet and Greedy,
+			Frosty
+		]))
+			return result();
+	}
+
+	return result();
+}
+
+float provideMeat(int amt, boolean doEquips, boolean speculative)
+{
+	return provideMeat(amt, my_location(), doEquips, speculative);
+}
+
+boolean provideMeat(int amt, location loc, boolean doEquips)
+{
+	return provideMeat(amt, loc, doEquips, false) >= amt;
+}
+
+boolean provideMeat(int amt, boolean doEquips)
+{
+	return provideMeat(amt, my_location(), doEquips);
+}
+
+
+
+		buffMaintain($effect[Disco Leer]);
+		buffMaintain($effect[Polka of Plenty]);
+		buffMaintain($effect[Cranberry Cordiality]);
+		buffMaintain($effect[Big Meat Big Prizes]);
+		buffMaintain($effect[Patent Avarice]);
+		buffMaintain($effect[Flapper Dancin\']);
+		
+		
+		
+		
+		
