@@ -1186,6 +1186,10 @@ boolean timeSpinnerCombat(monster goal, boolean speculative)
 
 boolean timeSpinnerCombat(monster goal, string option, boolean speculative)
 {
+	// reported in discord that this function is not working. Disable for now
+	return false;
+
+	
 	//spend 3 minutes to Travel to a Recent Fight
 	if(timeSpinnerRemaining(!speculative) < 3)
 	{
